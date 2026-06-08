@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Wizard Form View -->
+    <record id="view_factory_order_etl_wizard_form" model="ir.ui.view">
+        <field name="name">factory.order.etl.wizard.form</field>
+        <field name="model">factory.order.etl.wizard</field>
+        <field name="arch" type="xml">
+            <form string="工廠訂單 ETL">
+                <field name="state" invisible="1"/>
+
+                <!-- Upload State -->
+                <group attrs="{'invisible': [('state', '!=', 'upload')]}" string="上傳訂單檔案">
+                    <div class="alert alert-info" role="alert" colspan="2">
+                        請選擇「訂單種類」，並直接上傳原始訂單檔案（支援 PDF、XLS、XLSX、XLSB，可一次選取多個檔案）。
+                    </div>
+                    <field name="order_type_id" options="{'no_create': True, 'no_open': True}"/>
+                    <field name="order_files" widget="many2many_binary" string="原始訂單檔案"/>
+                </group>
+
+                <!-- Done State -->
+                <group attrs="{'invisible': [('state', '!=', 'done')]}" string="ETL 作業已完成">
+                    <div class="alert alert-success" role="alert" colspan="2">
+                        ETL 作業已順利完成！請點擊下方連結下載轉換後的 Excel 檔案。
+                    </div>
+                    <field name="output_file" filename="output_filename" widget="binary"/>
+                    <field name="output_filename" invisible="1"/>
+                    <field name="log_summary"/>
+                </group>
+
+                <footer>
+                    <button name="action_process" type="object" string="執行匯入" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'upload')]}"/>
+                    <button special="cancel" string="關閉" class="oe_link"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action to open Wizard -->
+    <record id="action_factory_order_etl_wizard" model="ir.actions.act_window">
+        <field name="name">工廠訂單 ETL 工具</field>
+        <field name="res_model">factory.order.etl.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <!-- Menu Items -->
+    <menuitem id="menu_factory_order_etl_root" name="訂單轉檔" sequence="10"/>
+    <menuitem id="menu_factory_order_etl_wizard" name="執行 ETL 工具" parent="menu_factory_order_etl_root" action="action_factory_order_etl_wizard" sequence="10"/>
+</odoo>
